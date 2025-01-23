@@ -1,0 +1,43 @@
+{
+  "name": "ryde-be",
+  "version": "0.0.1",
+  "description": "ryde be",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "clean": "rimraf dist coverage",
+    "format:write": "prettier --write \"**/*.{ts,js}\" --cache",
+    "format:check": "prettier --check \"**/*.{ts,js}\" --cache"
+  },
+  "author": "afif",
+  "dependencies": {
+    "@t3-oss/env-core": "^0.11.1",
+    "express": "^4.21.2",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.8",
+    "eslint-config-prettier": "^10.0.1",
+    "prettier": "^3.4.2",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript-eslint": "^8.21.0"
+  },
+  "tsup": {
+    "entry": [
+      "src"
+    ],
+    "format": [
+      "cjs",
+      "esm"
+    ],
+    "splitting": false,
+    "sourcemap": true,
+    "clean": true
+  }
+}
