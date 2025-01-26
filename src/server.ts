@@ -10,6 +10,7 @@ import { errorHandler, notFoundHandler } from "~/middleware/error.middleware";
 import userRouter from "./api/user/user.route";
 import { docsRouter } from "./docs/docs.router";
 import authRouter from "./api/auth/auth.route";
+import { healthRouter } from "./api/health/health.route";
 
 const app: Express = express();
 // Logger
@@ -43,6 +44,7 @@ await mongoose.connect(env.DB_URL).catch((error) => {
 // Routes
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
+app.use("/", healthRouter);
 
 // Swagger UI
 app.use("/docs", docsRouter);

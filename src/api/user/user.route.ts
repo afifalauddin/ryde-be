@@ -1,10 +1,14 @@
 import { validate } from "~/middleware/validation.middleware";
-import { userController } from "./user.controller";
-import { UserSchema, UserUpdateSchema } from "./user.model";
+import { userController } from "./dto/user.controller";
+import { UserSchema } from "./user.model";
 
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import express, { type Router } from "express";
 import { userIdDto } from "./dto/user.dto";
+import { verifyToken } from "~/middleware/auth.middleware";
+import { UserCreateDto } from "./dto/create.dto";
+import { UserFollowDto } from "./dto/follow.dto";
+import { UserUpdateDto } from "./dto/update.dto";
 
 export const userRegistry = new OpenAPIRegistry();
 const userRouter: Router = express.Router();
@@ -19,7 +23,7 @@ userRegistry.registerPath({
     body: {
       content: {
         "application/json": {
-          schema: UserSchema,
+          schema: UserCreateDto,
         },
       },
     },
@@ -36,7 +40,7 @@ userRegistry.registerPath({
   },
 });
 
-userRouter.post("/", validate(UserSchema), userController.create);
+userRouter.post("/", validate(UserCreateDto), userController.create);
 userRouter.get("/list", userController.findAll);
 
 userRegistry.registerPath({
@@ -85,7 +89,7 @@ userRegistry.registerPath({
     body: {
       content: {
         "application/json": {
-          schema: UserUpdateSchema,
+          schema: UserUpdateDto,
         },
       },
     },
@@ -105,7 +109,7 @@ userRegistry.registerPath({
 userRouter.patch(
   "/:id",
   validate(userIdDto, "params"),
-  validate(UserUpdateSchema, "body"),
+  validate(UserUpdateDto, "body"),
   userController.update,
 );
 
@@ -124,5 +128,101 @@ userRegistry.registerPath({
     },
   },
 });
+
+userRegistry.registerPath({
+  method: "post",
+  path: "/user/follow",
+  tags: ["User"],
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: UserFollowDto,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Operation successful",
+    },
+  },
+});
+
+userRouter.post(
+  "/follow",
+  verifyToken,
+  validate(UserFollowDto, "body"),
+  userController.followUser,
+);
+
+userRegistry.registerPath({
+  method: "post",
+  path: "/user/unfollow",
+  tags: ["User"],
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: UserFollowDto,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Operation successful",
+    },
+  },
+});
+
+userRouter.post(
+  "/unfollow",
+  verifyToken,
+  validate(UserFollowDto, "body"),
+  userController.unfollowUser,
+);
+
+userRegistry.registerPath({
+  method: "get",
+  path: "/user/follow/list",
+  tags: ["User"],
+
+  responses: {
+    200: {
+      description: "Object with user data.",
+    },
+  },
+});
+
+userRouter.get("/follow/list", verifyToken, userController.getFollowList);
+
+userRegistry.registerPath({
+  method: "get",
+  path: "/user/follow/{id}",
+  tags: ["User"],
+  parameters: [
+    {
+      name: "id",
+      in: "path",
+      required: true,
+      schema: {
+        type: "string",
+      },
+    },
+  ],
+  responses: {
+    200: {
+      description: "Operation successful",
+    },
+  },
+});
+
+userRouter.get(
+  "/follow/:id",
+  verifyToken,
+  validate(userIdDto, "params"),
+  userController.getFollowStatus,
+);
 
 export default userRouter;

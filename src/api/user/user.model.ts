@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { zodSchema } from "@zodyac/zod-mongoose";
-import { model, Document } from "mongoose";
+import { zodSchema, zId } from "@zodyac/zod-mongoose";
+import { model } from "mongoose";
 import { extendZod } from "@zodyac/zod-mongoose";
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 
@@ -23,10 +23,13 @@ export const UserSchema = z
       })
       .optional(),
     description: z.string().optional(),
+    followers: z.array(zId("User")),
+    following: z.array(zId("User")),
   })
   .openapi("User");
 
-const zodUser = zodSchema(UserSchema, {
+export const zodUser = zodSchema(UserSchema, {
+  timestamps: true,
   toJSON: {
     transform: (_, ret) => {
       // Transform ObjectId to string
@@ -40,6 +43,8 @@ const zodUser = zodSchema(UserSchema, {
       ret.dob = ret.dob ? ret.dob.toISOString() : null;
       ret.address = ret.address ?? null;
       ret.description = ret.description ?? null;
+      ret.followers = ret.followers ?? [];
+      ret.following = ret.following ?? [];
 
       return {
         id: ret.id, //make id on top
@@ -51,11 +56,3 @@ const zodUser = zodSchema(UserSchema, {
 
 export const UserModel = model("User", zodUser); //convert zod schema to mongoose model
 export type User = z.infer<typeof UserSchema>; //infer the type from zod schema
-
-//omit email from user since it should not be updated unless from oAuth
-export type UserUpdateDto = Omit<User, "email">;
-
-//make email optional in user schema
-export const UserUpdateSchema = UserSchema.omit({ email: true }).partial();
-
-export interface UserDocument extends User, Document {}
