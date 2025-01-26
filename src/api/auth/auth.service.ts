@@ -10,6 +10,7 @@ import { logger } from "~/server";
 import { IProviderUser } from "./type/provider.type";
 
 import { jwtService } from "./jwt.service";
+import { JwtPayload } from "jsonwebtoken";
 
 class AuthService {
   private Provider: Record<string, AuthProvider> = {};
@@ -103,16 +104,50 @@ class AuthService {
     }
 
     const { accessToken, refreshToken } = jwtService.generateTokens({
-      userId: user.toJSON()._id,
+      sub: user._id.toString(),
       email: user.email,
     });
 
-    //NOTE: This should response redirection
+    //NOTE: This should response redirection for real usecase
     return {
       accessToken,
       refreshToken,
       user,
     };
+  }
+
+  async refreshAccessToken(refreshToken: string) {
+    try {
+      const payload = jwtService.verifyRefreshToken<JwtPayload>(refreshToken);
+      logger.debug({ payload }, "refreshAccessToken...");
+
+      if (!payload || !payload.sub) {
+        throw ApiError.badRequest("Invalid refresh token");
+      }
+
+      const user = await userService.getUserById(payload.sub);
+
+      if (!user) {
+        logger.debug({ payload }, "refreshAccessToken.USER_NOT_FOUND");
+        throw ApiError.unauthorized("Invalid user");
+      }
+
+      logger.debug({ payload }, "refreshAccessToken.signAccessToken...");
+
+      const accessToken = jwtService.signAccessToken({
+        sub: payload.sub,
+        email: payload.email,
+      });
+
+      return { accessToken };
+    } catch (error) {
+      logger.error({ error }, "refreshAccessToken.error");
+      throw ApiError.badRequest("Invalid refresh token");
+    }
+  }
+
+  async getAuthedUser(userId: string) {
+    return userService.getUserById(userId);
   }
 }
 

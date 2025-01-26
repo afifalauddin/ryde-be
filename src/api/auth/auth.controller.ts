@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { authService } from "./auth.service";
+import { ApiError } from "~/utils/api-error";
+import { logger } from "~/server";
 
 class AuthController {
   async initGoogleLogin(req: Request, res: Response) {
@@ -18,22 +20,36 @@ class AuthController {
 
   async googleCallback(req: Request, res: Response) {
     try {
-      const users = await authService.redirectCallback({
+      const user = await authService.redirectCallback({
         code: req.query.code?.toString() ?? "",
         state: req.query.state?.toString() ?? "",
         type: "google",
       });
-      res.success(users);
+      res.success(user);
     } catch (error) {
       res.error(error);
     }
   }
 
-  async getUser(req: Request, res: Response) {
+  async getAuthUser(req: Request, res: Response) {
+    logger.debug({ user: req.user }, "getAuthUser...");
     try {
-      // @ts-ignore
-      const users = req.user;
-      res.success(users);
+      if (!req.user) {
+        throw ApiError.unauthorized("Auth not found");
+      }
+      const user = await authService.getAuthedUser(req.user.sub);
+      res.success(user);
+    } catch (error) {
+      res.error(error);
+    }
+  }
+
+  async refreshToken(req: Request, res: Response) {
+    try {
+      const accessToken = await authService.refreshAccessToken(
+        req.body.refreshToken,
+      );
+      res.success(accessToken);
     } catch (error) {
       res.error(error);
     }

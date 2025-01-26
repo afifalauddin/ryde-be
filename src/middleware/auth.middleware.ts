@@ -2,7 +2,7 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 import { ApiError } from "~/utils/api-error";
 
 import { jwtService } from "~/api/auth/jwt.service";
-import { JwtPayload } from "~/types/jwt";
+import { JwtPayload } from "jsonwebtoken";
 
 export const verifyToken: RequestHandler = (
   req: Request,

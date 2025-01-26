@@ -32,7 +32,7 @@ export class JwtService {
   /**
    * Sign a new access token
    */
-  private signAccessToken<T extends JwtPayload>(payload: T) {
+  signAccessToken<T extends JwtPayload>(payload: T) {
     return jwt.sign(payload, this.secret, {
       expiresIn: this.accessTokenExpiry,
     });
@@ -68,19 +68,6 @@ export class JwtService {
     } catch (error) {
       return undefined;
     }
-  }
-
-  /**
-   * Refresh access token using refresh token
-   */
-  refreshAccessToken<T>(refreshToken: string) {
-    const payload = this.verifyRefreshToken<T>(refreshToken);
-
-    if (!payload) {
-      return undefined;
-    }
-
-    return this.signAccessToken(payload);
   }
 
   /**
