@@ -7,15 +7,17 @@ export class UserController {
       const user = await userService.create(req.body);
       res.success(user);
     } catch (error) {
-      if (error instanceof Error) {
-        res.error(error);
-      }
+      res.error(error);
     }
   }
 
   async findAll(_: Request, res: Response) {
-    const users = await userService.findAll();
-    res.success(users);
+    try {
+      const users = await userService.findAll();
+      res.success(users);
+    } catch (error) {
+      res.error(error);
+    }
   }
 }
 

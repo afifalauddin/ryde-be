@@ -9,6 +9,7 @@ import { responseHandler } from "~/middleware/response.middleware";
 import { errorHandler, notFoundHandler } from "~/middleware/error.middleware";
 import userRouter from "./api/user/user.route";
 import { docsRouter } from "./docs/docs.router";
+import authRouter from "./api/auth/auth.route";
 
 const app: Express = express();
 // Logger
@@ -40,9 +41,10 @@ await mongoose.connect(env.DB_URL).catch((error) => {
 
 // Routes
 app.use("/user", userRouter);
+app.use("/auth", authRouter);
 
 // Swagger UI
-app.use("/", docsRouter);
+app.use("/docs", docsRouter);
 
 // Handle unknown routes
 app.use(notFoundHandler);

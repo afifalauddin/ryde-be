@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { ResponseFormatter } from "../utils/response-formatter";
-import { ApiError } from "../utils/api-error";
+import { ResponseFormatter } from "~/utils/response";
+import { ApiError } from "~/utils/api-error";
 import { ZodError } from "zod";
 
 export const responseHandler = (

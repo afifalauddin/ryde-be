@@ -8,7 +8,6 @@ export const validateRequest =
       await schema.parseAsync(req.body);
       next();
     } catch (error) {
-      console.log("ERROR_TRIGGERED");
       res.error(error);
     }
   };

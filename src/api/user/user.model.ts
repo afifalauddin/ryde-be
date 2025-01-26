@@ -16,15 +16,18 @@ export const UserSchema = z
         street: z.string().optional(),
         city: z.string().optional(),
         state: z.string().optional(),
+        country: z.string().optional(),
+        latitude: z.number().optional(),
+        longitude: z.number().optional(),
       })
       .optional(),
     description: z.string().optional(),
   })
   .openapi("User");
 
-const zUser = zodSchema(UserSchema);
-export const UserModel = model("User", zUser);
+const zodUser = zodSchema(UserSchema);
 
+export const UserModel = model("User", zodUser);
 export type User = z.infer<typeof UserSchema>;
 
 export interface UserDocument extends User, Document {}

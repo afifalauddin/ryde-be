@@ -1,4 +1,4 @@
-import { validateRequest } from "~/middleware/validation.middleware";
+import { validateRequest } from "~/utils/request";
 import { userController } from "./user.controller";
 import { UserSchema } from "./user.model";
 

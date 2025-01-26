@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
-import { ApiError } from "../utils/api-error";
+import { ApiError } from "~/utils/api-error";
 import { ZodError } from "zod";
 import { MongooseError } from "mongoose";
 
