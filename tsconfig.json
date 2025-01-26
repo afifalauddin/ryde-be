@@ -21,7 +21,10 @@
     "isolatedModules": true,
 
     "noEmit": true,
-    "incremental": true
+    "incremental": true,
+
+    // for test
+    "types": ["vitest/globals"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

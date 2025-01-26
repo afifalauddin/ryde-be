@@ -9,7 +9,8 @@
     "start": "node dist/index.js",
     "clean": "rimraf dist coverage",
     "format:write": "prettier --write \"**/*.{ts,js}\" --cache",
-    "format:check": "prettier --check \"**/*.{ts,js}\" --cache"
+    "format:check": "prettier --check \"**/*.{ts,js}\" --cache",
+    "test": "vitest run"
   },
   "author": "afif",
   "dependencies": {
@@ -23,17 +24,22 @@
     "@eslint/js": "^9.18.0",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.8",
+    "@types/supertest": "^6.0.2",
     "eslint-config-prettier": "^10.0.1",
     "pino-pretty": "^13.0.0",
     "prettier": "^3.4.2",
     "rimraf": "^6.0.1",
+    "supertest": "^7.0.0",
     "tsup": "^8.3.5",
     "tsx": "^4.19.2",
-    "typescript-eslint": "^8.21.0"
+    "typescript-eslint": "^8.21.0",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.0.3"
   },
   "tsup": {
     "entry": [
-      "src"
+      "src",
+      "!src/**/*.test.*"
     ],
     "format": [
       "cjs",

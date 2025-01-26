@@ -1,7 +1,7 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
 
 const unexpectedRequest: RequestHandler = (_req, res) => {
-  res.sendStatus(400);
+  res.sendStatus(404);
 };
 
 const addErrorToRequestLog: ErrorRequestHandler = (err, _req, res, next) => {
