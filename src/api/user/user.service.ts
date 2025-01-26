@@ -1,5 +1,5 @@
 import { ApiError } from "~/utils/api-error";
-import { User, UserModel } from "./user.model";
+import { User, UserModel, UserUpdateDto } from "./user.model";
 
 import { logger } from "~/server";
 
@@ -23,31 +23,59 @@ export class UserService {
   }
 
   async upsertUser(filter: Partial<User>, update: Partial<User>) {
-    return await UserModel.findOneAndUpdate(
+    return UserModel.findOneAndUpdate(
       filter,
       { $set: update },
       {
+        new: true,
         upsert: true,
         runValidators: true,
       },
     );
   }
 
-  async create(data: User) {
-    logger.debug("create", data);
+  async createUser(data: User) {
+    logger.debug(data, "UserService.create");
     const { email, ...others } = data;
 
-    try {
-      const user = await this.upsertUser({ email: data.email }, others);
+    const user = await this.upsertUser({ email: data.email }, others);
 
-      if (!user) {
-        throw ApiError.badRequest("Failed to create user");
-      }
-
-      return user.toJSON();
-    } catch (error) {
-      throw error;
+    if (!user) {
+      throw ApiError.badRequest("Failed to create user");
     }
+
+    return user.toJSON();
+  }
+
+  async updateUserById(userId: string, data: Partial<UserUpdateDto>) {
+    const user = await UserModel.findByIdAndUpdate(
+      userId,
+      { $set: data },
+      { new: true },
+    );
+
+    if (!user) {
+      throw ApiError.badRequest("User not found");
+    }
+
+    return user.toJSON();
+  }
+
+  async getUserById(userId: string) {
+    logger.info({ userId }, "UserService.getUserById");
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      throw ApiError.notFound("User not found");
+    }
+    return user.toJSON();
+  }
+
+  async deleteUserById(userId: string) {
+    const user = await UserModel.findByIdAndDelete(userId);
+    if (!user) {
+      throw ApiError.badRequest("User not found");
+    }
+    return user;
   }
 }
 

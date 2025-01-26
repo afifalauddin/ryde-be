@@ -7,11 +7,10 @@ import { verifyToken } from "~/middleware/auth.middleware";
 export const authRegistry = new OpenAPIRegistry();
 const authRouter: Router = express.Router();
 
-// authRegistry.register("Auth", );
-
 authRegistry.registerPath({
   method: "get",
   path: "/auth/google",
+  description: "",
   tags: ["Auth"],
   responses: {
     200: {
@@ -21,19 +20,7 @@ authRegistry.registerPath({
 });
 
 authRouter.get("/google", authController.initGoogleLogin);
-
-authRegistry.registerPath({
-  method: "get",
-  path: "/auth/google/redirect",
-  tags: ["Auth"],
-  responses: {
-    200: {
-      description: "Object with user data.",
-    },
-  },
-});
-
-authRouter.get("/google/redirect", authController.googleCallback);
+authRouter.get("/google/redirect", authController.googleCallback); //for redirect from google, doesnt need to be exposed in docs
 
 authRegistry.registerPath({
   method: "get",

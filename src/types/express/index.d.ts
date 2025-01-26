@@ -1,3 +1,5 @@
+import { JwtPayload } from "~/types/jwt";
+
 declare global {
   namespace Express {
     export interface Response {
@@ -14,6 +16,10 @@ declare global {
         statusCode?: number,
       ): Response;
       error(error: unknown, statusCode?: number): Response;
+    }
+
+    interface Request {
+      user?: JwtPayload;
     }
 
     export interface Locals {

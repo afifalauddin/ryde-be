@@ -4,7 +4,12 @@ import { GoogleAuth } from "./provider/google.provider";
 import { ApiError } from "~/utils/api-error";
 import { LoginDto } from "./dto/login.dto";
 
+import { userService } from "~/api/user/user.service";
+
 import { logger } from "~/server";
+import { IProviderUser } from "./type/provider.type";
+
+import { jwtService } from "./jwt.service";
 
 class AuthService {
   private Provider: Record<string, AuthProvider> = {};
@@ -50,15 +55,19 @@ class AuthService {
       this.invalidProvider(type);
     }
 
-    logger.debug({ code: code ?? "N/A", state }, "redirect.login.tokens");
+    logger.debug({ code: code ?? "N/A", state }, "redirectCallback");
+
+    if (!code) {
+      throw ApiError.badRequest("Code is required");
+    }
 
     const token = await client.getTokens({ code });
 
     if (!token.success) {
-      return ApiError.unauthorized("Please check your credentials");
+      throw ApiError.unauthorized("Please check your credentials");
     }
 
-    logger.debug("redirect.login.profile");
+    logger.debug("redirectCallback.Profile...");
 
     const profile = await client.getProfile({
       accessToken: token.accessToken,
@@ -66,12 +75,43 @@ class AuthService {
     });
 
     if (!profile.success) {
-      return ApiError.unauthorized("Something wrong with your profile");
+      throw ApiError.badRequest("Failed to get oAuth Profile");
     }
 
+    logger.debug({ profile }, "redirectCallback.Profile");
+
+    return this.loginOrRegister(profile);
+  }
+
+  async loginOrRegister(pUser: IProviderUser) {
+    const { email, name } = pUser;
+    logger.debug({ email, name }, "loginOrRegister...");
+
+    const user = await userService.upsertUser(
+      {
+        email: email,
+      },
+      {
+        name,
+      },
+    );
+
+    logger.debug({ user }, "loginOrRegister.created");
+
+    if (!user) {
+      throw ApiError.badRequest("Failed to create user");
+    }
+
+    const { accessToken, refreshToken } = jwtService.generateTokens({
+      userId: user.toJSON()._id,
+      email: user.email,
+    });
+
+    //NOTE: This should response redirection
     return {
-      ...profile,
-      token,
+      accessToken,
+      refreshToken,
+      user,
     };
   }
 }

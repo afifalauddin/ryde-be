@@ -16,7 +16,6 @@ export function generateOpenAPIDocument() {
     info: {
       version: "0.0.1",
       title: "RYDE USER API",
-      description: "API Docs for RYDE User Service",
     },
     externalDocs: {
       description: "View the raw OpenAPI Spec",

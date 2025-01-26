@@ -36,17 +36,26 @@ const zodUser = zodSchema(UserSchema, {
       delete ret._id;
       delete ret.__v;
 
-      ret.email = ret.email ?? undefined;
-      ret.dob = ret.dob ? ret.dob.toISOString() : undefined;
-      ret.address = ret.address ?? undefined;
-      ret.description = ret.description ?? undefined;
+      ret.email = ret.email ?? null;
+      ret.dob = ret.dob ? ret.dob.toISOString() : null;
+      ret.address = ret.address ?? null;
+      ret.description = ret.description ?? null;
 
-      return ret;
+      return {
+        id: ret.id, //make id on top
+        ...ret,
+      };
     },
   },
 });
 
-export const UserModel = model("User", zodUser);
-export type User = z.infer<typeof UserSchema>;
+export const UserModel = model("User", zodUser); //convert zod schema to mongoose model
+export type User = z.infer<typeof UserSchema>; //infer the type from zod schema
+
+//omit email from user since it should not be updated unless from oAuth
+export type UserUpdateDto = Omit<User, "email">;
+
+//make email optional in user schema
+export const UserUpdateSchema = UserSchema.omit({ email: true }).partial();
 
 export interface UserDocument extends User, Document {}

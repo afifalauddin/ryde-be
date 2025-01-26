@@ -1,33 +1,31 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import jwt from "jsonwebtoken";
 import { ApiError } from "~/utils/api-error";
-import { env } from "~/utils/env";
+
+import { jwtService } from "~/api/auth/jwt.service";
+import { JwtPayload } from "~/types/jwt";
 
 export const verifyToken: RequestHandler = (
   req: Request,
-  _res: Response,
+  res: Response,
   next: NextFunction,
 ) => {
   try {
-    const authHeader = req.headers.authorization;
+    const token = jwtService.extractTokenFromHeader(req.headers.authorization);
 
-    if (!authHeader || !authHeader.length) {
-      throw ApiError.unauthorized("Missing Auth Token");
+    if (!token) {
+      throw ApiError.unauthorized("No Auth provided");
     }
 
-    const token = authHeader.split(" ")[1];
+    const payload = jwtService.verifyAccessToken<JwtPayload>(token);
 
-    const decoded = jwt.verify(token, env.JWT_SECRET);
+    if (!payload) {
+      throw ApiError.unauthorized("Invalid or expired token");
+    }
 
-    //TODO: Add user to request object
-    //@ts-ignore
-    req.user = decoded;
+    req.user = payload;
 
     next();
   } catch (error) {
-    if (error instanceof ApiError) {
-      throw error;
-    }
-    throw ApiError.unauthorized("Invalid Token");
+    res.error(error);
   }
 };

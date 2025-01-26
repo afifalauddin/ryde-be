@@ -14,6 +14,7 @@ import authRouter from "./api/auth/auth.route";
 const app: Express = express();
 // Logger
 const logger = pino({
+  level: env.LOG_LEVEL,
   name: "RYDE_USER",
   //if not in production, use pino-pretty for better local readability
   ...(env.NODE_ENV !== "production" && {

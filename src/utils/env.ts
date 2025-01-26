@@ -9,6 +9,7 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "production", "test"])
       .default("development"),
+
     PORT: z.coerce.number().default(3001),
     DB_URL: z.string(),
     GOOGLE_CLIENT_ID: z.string(),
@@ -16,6 +17,7 @@ export const env = createEnv({
     GOOGLE_CALLBACK_URL: z.string().url(),
     JWT_SECRET: z.string(),
     REFRESH_SECRET: z.string(),
+    LOG_LEVEL: z.enum(["debug", "info"]).default("info"),
   },
 
   runtimeEnv: {
@@ -27,6 +29,7 @@ export const env = createEnv({
     GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
     JWT_SECRET: process.env.JWT_SECRET,
     REFRESH_SECRET: process.env.REFRESH_SECRET,
+    LOG_LEVEL: process.env.LOG_LEVEL,
   },
 
   emptyStringAsUndefined: true,
