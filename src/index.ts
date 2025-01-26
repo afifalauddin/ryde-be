@@ -2,18 +2,18 @@ import { app, logger } from "./server";
 import { env } from "./utils/env";
 
 const server = app.listen(env.PORT, () => {
-  const { NODE_ENV, HOST, PORT } = env;
-  logger.info(`Server (${NODE_ENV}) running on port http://${HOST}:${PORT}`);
+  logger.info(`Server (${env.NODE_ENV}) listening on port ${env.PORT}`);
 });
 
 const onCloseSignal = () => {
-  logger.info("sigint received, shutting down");
+  logger.info("sigint: shutting down");
   server.close(() => {
     logger.info("server closed");
     process.exit();
   });
-  setTimeout(() => process.exit(1), 10000).unref(); // Force shutdown after 10s
+  //Force Exit after 5 seconds
+  setTimeout(() => process.exit(1), 5000).unref();
 };
 
-process.on("SIGINT", onCloseSignal);
-process.on("SIGTERM", onCloseSignal);
+process.on("SIGINT", onCloseSignal); //Ctrl+C
+process.on("SIGTERM", onCloseSignal); //Graceful shutdown

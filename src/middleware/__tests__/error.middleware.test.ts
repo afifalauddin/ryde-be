@@ -1,6 +1,7 @@
 import express, { type Express } from "express";
 import request from "supertest";
-import errorHandler from "~/middleware/error.middleware";
+import errorHandler from "~/middleware/response-handler.middleware";
+import { ApiError } from "~/utils/api-error";
 
 describe("Error Handler Middleware", () => {
   let app: Express;
@@ -9,7 +10,7 @@ describe("Error Handler Middleware", () => {
     app = express();
 
     app.get("/error", () => {
-      throw new Error("Test error");
+      throw ApiError.internal("Test error");
     });
     app.get("/next-error", (_req, _res, next) => {
       const error = new Error("Error passed to next()");
@@ -17,8 +18,8 @@ describe("Error Handler Middleware", () => {
     });
 
     app.use(errorHandler());
-    //@ts-expect-error just for testing
-    app.use("*", (_, res) => res.status(404).send("Not Found"));
+    //@ts-expect-error ignore type
+    app.use("*", (_, res) => res.error(ApiError.notFound("Not found")));
   });
 
   describe("Handling unknown routes", () => {
@@ -38,6 +39,7 @@ describe("Error Handler Middleware", () => {
   describe("Handling errors passed to next()", () => {
     it("handles errors passed to next() with a 500 status code", async () => {
       const response = await request(app).get("/next-error");
+
       expect(response.status).toBe(500);
     });
   });

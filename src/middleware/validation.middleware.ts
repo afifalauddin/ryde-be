@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { AnyZodObject, ZodError } from "zod";
+import { AnyZodObject } from "zod";
 
 export const validateRequest =
   (schema: AnyZodObject) =>
@@ -8,13 +8,7 @@ export const validateRequest =
       await schema.parseAsync(req.body);
       next();
     } catch (error) {
-      if (error instanceof ZodError) {
-        res.status(400).json({ error: error.errors });
-      }
-      if (error instanceof Error) {
-        res.status(400).json({ error: error.message });
-      }
-
-      res.status(400).json({ error: error });
+      console.log("ERROR_TRIGGERED");
+      res.error(error);
     }
   };

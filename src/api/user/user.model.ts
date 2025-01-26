@@ -1,8 +1,6 @@
 import { z } from "zod";
-import { extendZod, zodSchema } from "@zodyac/zod-mongoose";
+import { zodSchema } from "@zodyac/zod-mongoose";
 import { model, Document } from "mongoose";
-
-extendZod(z);
 
 export const UserSchema = z.object({
   name: z.string().min(3).max(255),

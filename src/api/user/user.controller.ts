@@ -1,4 +1,3 @@
-import { UserSchema } from "./user.model";
 import { userService } from "./user.service";
 import { Request, Response } from "express";
 
@@ -6,15 +5,17 @@ export class UserController {
   async create(req: Request, res: Response) {
     try {
       const user = await userService.create(req.body);
-      res.status(201).json(user);
+      res.success(user);
     } catch (error) {
-      res.status(400).json({ error: (error as Error).message });
+      if (error instanceof Error) {
+        res.error(error);
+      }
     }
   }
 
   async findAll(_: Request, res: Response) {
     const users = await userService.findAll();
-    res.json(users);
+    res.success(users);
   }
 }
 
