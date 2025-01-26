@@ -90,10 +90,10 @@ const genReqId = (
   req: IncomingMessage,
   res: ServerResponse<IncomingMessage>,
 ) => {
-  const existingID = req.id ?? req.headers["x-request-id"];
-  if (existingID) return existingID;
+  const currId = req.id ?? req.headers["x-request-id"];
+  if (currId) return currId;
   const id = randomUUID();
-  res.setHeader("X-Request-Id", id);
+  res.setHeader("x-request-id", id);
   return id;
 };
 

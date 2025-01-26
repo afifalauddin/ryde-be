@@ -1,4 +1,4 @@
-import { validateRequest } from "~/utils/request";
+import { validate } from "~/middleware/validation.middleware";
 import { userController } from "./user.controller";
 import { UserSchema } from "./user.model";
 
@@ -32,6 +32,15 @@ userRegistry.registerPath({
   method: "post",
   path: "/user",
   tags: ["User"],
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: UserSchema,
+        },
+      },
+    },
+  },
   responses: {
     200: {
       description: "Object with user data.",
@@ -44,6 +53,6 @@ userRegistry.registerPath({
   },
 });
 
-userRouter.post("/", validateRequest(UserSchema), userController.create);
+userRouter.post("/", validate(UserSchema), userController.create);
 
 export default userRouter;

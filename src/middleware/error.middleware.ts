@@ -2,6 +2,7 @@ import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 import { ApiError } from "~/utils/api-error";
 import { ZodError } from "zod";
 import { MongooseError } from "mongoose";
+import { logger } from "~/server";
 
 // Use ErrorRequestHandler type for error handling middleware
 export const errorHandler: ErrorRequestHandler = (
@@ -10,14 +11,16 @@ export const errorHandler: ErrorRequestHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  // Log error
-  console.error("Error:", {
-    name: error.name,
-    message: error.message,
-    stack: error.stack,
-    path: req.path,
-    method: req.method,
-  });
+  logger.error(
+    {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      path: req.path,
+      method: req.method,
+    },
+    "ERROR_HANDLER",
+  );
 
   // Store error in locals
   res.locals.error = {
@@ -72,6 +75,24 @@ export const errorHandler: ErrorRequestHandler = (
       timestamp: new Date().toISOString(),
       path: req.originalUrl,
     });
+    return next();
+  }
+
+  // Handle JSON parsing error
+  if (error.name === "SyntaxError") {
+    res.locals.error = {
+      code: "VALIDATION_ERROR",
+      message: "Please check if your request body is a valid JSON",
+      details: error.message,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    };
+    res.status(400).json({
+      success: false,
+      error: res.locals.error,
+      timestamp: new Date().toISOString(),
+      path: req.originalUrl,
+    });
+
     return next();
   }
 

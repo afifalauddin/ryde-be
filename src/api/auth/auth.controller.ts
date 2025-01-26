@@ -28,6 +28,16 @@ class AuthController {
       res.error(error);
     }
   }
+
+  async getUser(req: Request, res: Response) {
+    try {
+      // @ts-ignore
+      const users = req.user;
+      res.success(users);
+    } catch (error) {
+      res.error(error);
+    }
+  }
 }
 
 export const authController = new AuthController();

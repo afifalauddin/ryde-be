@@ -13,8 +13,8 @@ export class UserController {
 
   async findAll(_: Request, res: Response) {
     try {
-      const users = await userService.findAll();
-      res.success(users);
+      const { users, pagination } = await userService.getAllUser();
+      res.successWithPagination(users, pagination);
     } catch (error) {
       res.error(error);
     }
