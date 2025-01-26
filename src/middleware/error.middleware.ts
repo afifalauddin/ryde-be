@@ -46,6 +46,7 @@ export const errorHandler: ErrorRequestHandler = (
     return next();
   }
 
+  //handle zod exceptins
   if (error instanceof ZodError) {
     res.locals.error = {
       code: "VALIDATION_ERROR",
@@ -63,6 +64,7 @@ export const errorHandler: ErrorRequestHandler = (
     return next();
   }
 
+  //handle mongoose exceptions
   if (error instanceof MongooseError) {
     res.locals.error = {
       code: "DATABASE_ERROR",
@@ -107,7 +109,7 @@ export const errorHandler: ErrorRequestHandler = (
   return next();
 };
 
-// Handle 404 errors for unknown routes
+// Handle  unknown routes
 export const notFoundHandler = (
   req: Request,
   res: Response,
@@ -119,6 +121,7 @@ export const notFoundHandler = (
     message: error.message,
     stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
   };
+
   res.status(404).json({
     success: false,
     error: res.locals.error,

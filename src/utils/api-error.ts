@@ -1,3 +1,7 @@
+/**
+ * Custom API Error class for handling HTTP errors with status codes and error details
+ * @extends Error
+ */
 export class ApiError extends Error {
   constructor(
     public statusCode: number,

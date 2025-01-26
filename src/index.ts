@@ -2,9 +2,12 @@ import { app, logger } from "./server";
 import { env } from "./utils/env";
 
 const server = app.listen(env.PORT, () => {
-  logger.info(`Server (${env.NODE_ENV}) listening on port ${env.PORT}`);
+  logger.info(
+    `Server (${env.NODE_ENV}) listening on port ${env.PORT}, Logging level: ${env.LOG_LEVEL}, HTTP Logging: ${env.HTTP_LOG}`,
+  );
 });
 
+// handle server close
 const onCloseSignal = () => {
   logger.info("sigint: shutting down");
   server.close(() => {

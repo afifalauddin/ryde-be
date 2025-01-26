@@ -4,6 +4,7 @@ import { ApiError } from "~/utils/api-error";
 import { jwtService } from "~/api/auth/jwt.service";
 import { JwtPayload } from "jsonwebtoken";
 
+// Middleware to verify if JWT token exist and valid
 export const verifyToken: RequestHandler = (
   req: Request,
   res: Response,
@@ -21,6 +22,7 @@ export const verifyToken: RequestHandler = (
     if (!payload) {
       throw ApiError.unauthorized("Invalid or expired token");
     }
+    //TODO: should add valid user check, session check etc, invalidated token
 
     req.user = payload;
 

@@ -5,6 +5,7 @@ import type { LevelWithSilent } from "pino";
 import { type CustomAttributeKeys, type Options, pinoHttp } from "pino-http";
 import { env } from "~/utils/env";
 
+// Define log levels
 enum LogLevel {
   Fatal = "fatal",
   Error = "error",
@@ -15,6 +16,7 @@ enum LogLevel {
   Silent = "silent",
 }
 
+// Interface defining custom properties for Pino logger
 type PinoCustomProps = {
   request: Request;
   response: Response;
@@ -22,9 +24,10 @@ type PinoCustomProps = {
   responseBody: unknown;
 };
 
+//add custom props and options to enable pino-http
 const requestLogger = (options?: Options): RequestHandler[] => {
   const pinoOptions: Options = {
-    enabled: env.NODE_ENV === "production",
+    enabled: env.NODE_ENV === "production" || env.HTTP_LOG,
     customProps: customProps as unknown as Options["customProps"],
     redact: [],
     genReqId,
@@ -86,6 +89,7 @@ const customSuccessMessage = (
   return `${req.method} completed`;
 };
 
+//atach request id to the request so that it can be used for tracing
 const genReqId = (
   req: IncomingMessage,
   res: ServerResponse<IncomingMessage>,

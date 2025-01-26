@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { Pagination } from "~/types/response";
 
+// ResponseFormatter class to format response so that it would be consistent across the application
 export class ResponseFormatter {
   static success({
     res,

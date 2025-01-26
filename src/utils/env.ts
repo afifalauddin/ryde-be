@@ -17,7 +17,13 @@ export const env = createEnv({
     GOOGLE_CALLBACK_URL: z.string().url(),
     JWT_SECRET: z.string(),
     REFRESH_SECRET: z.string(),
-    LOG_LEVEL: z.enum(["debug", "info"]).default("info"),
+    LOG_LEVEL: z
+      .enum(["fatal", "warn", "debug", "info", "trace", "silent"])
+      .default("info"),
+
+    HTTP_LOG: z
+      .string()
+      .transform((s) => s === "true" || s === "t" || s === "1"),
   },
 
   runtimeEnv: {
@@ -30,6 +36,7 @@ export const env = createEnv({
     JWT_SECRET: process.env.JWT_SECRET,
     REFRESH_SECRET: process.env.REFRESH_SECRET,
     LOG_LEVEL: process.env.LOG_LEVEL,
+    HTTP_LOG: process.env.HTTP_LOG,
   },
 
   emptyStringAsUndefined: true,
