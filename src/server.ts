@@ -1,25 +1,16 @@
 import express, { type Express } from "express";
 import pino from "pino";
-import requestLogger from "~/middleware/request-logger.middleware";
+import requestLogger from "~/middleware/logger.middleware";
 
-import userRouter from "~/api/user/user.route";
 import mongoose from "mongoose";
 import { env } from "./utils/env";
 
-import { z } from "zod";
-import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
-import { extendZod } from "@zodyac/zod-mongoose";
-import { responseHandler } from "~/middleware/response-handler.middleware";
-import {
-  errorHandler,
-  notFoundHandler,
-} from "~/middleware/error-handler.middleware";
+import { responseHandler } from "~/middleware/response.middleware";
+import { errorHandler, notFoundHandler } from "~/middleware/error.middleware";
+import userRouter from "./api/user/user.route";
+import { docsRouter } from "./docs/docs.router";
 
 const app: Express = express();
-
-extendZod(z); //zod to mongoose
-extendZodWithOpenApi(z); //zod to openapi
-
 // Logger
 const logger = pino({
   name: "RYDE_USER",
@@ -50,12 +41,13 @@ await mongoose.connect(env.DB_URL).catch((error) => {
 // Routes
 app.use("/user", userRouter);
 
+// Swagger UI
+app.use("/", docsRouter);
+
 // Handle unknown routes
 app.use(notFoundHandler);
 
 // Error handling
 app.use(errorHandler);
-
-// Swagger UI
 
 export { app, logger };
