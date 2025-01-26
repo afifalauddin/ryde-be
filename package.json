@@ -28,6 +28,7 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.8",
     "@types/supertest": "^6.0.2",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint-config-prettier": "^10.0.1",
     "pino-pretty": "^13.0.0",
     "prettier": "^3.4.2",
@@ -51,5 +52,10 @@
     "splitting": false,
     "sourcemap": true,
     "clean": true
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
