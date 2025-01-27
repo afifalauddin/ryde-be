@@ -1,6 +1,7 @@
 import { z } from "zod";
+import { latitude, longitude } from "~/types/geo";
 
 export const locationSchema = z.object({
-  latitude: z.number(),
-  longitude: z.number(),
+  latitude: latitude,
+  longitude: longitude,
 });

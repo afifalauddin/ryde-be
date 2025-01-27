@@ -1,15 +1,15 @@
-import { Point } from "~/types/location";
+import { Coordinate } from "~/types/geo";
 
 /**
  * Calculate the distance between two points on the Earth's surface
  * using the Haversine formula.
- * @param source - The first point
- * @param target - The second point
+ * @param source - Source coordinate
+ * @param target - Target coordinate
  * @returns The distance between the two points in meters
  * @see https://en.wikipedia.org/wiki/Haversine_formula
  * @source: https://www.movable-type.co.uk/scripts/latlong.html
  */
-export const getDistance = (source: Point, target: Point): number => {
+export const getDistance = (source: Coordinate, target: Coordinate) => {
   const earthRadiusInMeters = 6371e3; // Earth's radius in meters
   const lat1InRadians = (source.lat * Math.PI) / 180;
   const lat2InRadians = (target.lat * Math.PI) / 180;
