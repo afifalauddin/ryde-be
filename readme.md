@@ -14,6 +14,7 @@
   - [Scripts](#scripts)
   - [Running the Code Locally in development mode](#running-the-code-locally-in-development-mode)
   - [Running the Code Locally in production mode](#running-the-code-locally-in-production-mode)
+  - [Running the Code via Docker](#running-the-code-via-docker)
   - [Linting and Formatting](#linting-and-formatting)
   - [TypeScript Configuration](#typescript-configuration)
   - [Commitizen](#commitizen)
