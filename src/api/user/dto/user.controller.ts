@@ -1,6 +1,7 @@
 import { ApiError } from "~/utils/api-error";
 import { userService } from "../user.service";
 import { Request, Response } from "express";
+import { getNearbyUsersSchema } from "./nearby.dto";
 
 export class UserController {
   async create(req: Request, res: Response) {
@@ -102,6 +103,37 @@ export class UserController {
     try {
       const result = await userService.getFollowList(req.user.sub);
       res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  }
+
+  async getNearbyUsers(req: Request, res: Response) {
+    try {
+      const params = getNearbyUsersSchema.parse(req.query);
+
+      const nearbyUsers = await userService.getNearbyUsers(
+        req.user.sub,
+        params,
+      );
+      res.success(nearbyUsers);
+    } catch (error) {
+      res.error(error);
+    }
+  }
+
+  async updateLocation(req: Request, res: Response) {
+    try {
+      const userId = req.user.sub;
+      const { latitude, longitude } = req.body;
+
+      const user = await userService.updateLocation(
+        userId,
+        latitude,
+        longitude,
+      );
+
+      res.success(user);
     } catch (error) {
       res.error(error);
     }

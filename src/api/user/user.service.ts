@@ -2,6 +2,8 @@ import { ApiError } from "~/utils/api-error";
 import { User, UserModel } from "./user.model";
 
 import { logger } from "~/server";
+import { getDistance } from "~/utils/distance";
+import { GetNearbyUsersDto } from "./dto/nearby.dto";
 
 /**
  * Service class for handling user-related operations
@@ -186,6 +188,84 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async getNearbyUsers(userId: string, dto: GetNearbyUsersDto) {
+    const mainUser = await UserModel.findById(userId);
+
+    if (!mainUser) {
+      throw ApiError.notFound("User not found");
+    }
+
+    if (!mainUser.address) {
+      throw ApiError.badRequest(
+        "User Address not found. Please update your location",
+      );
+    }
+
+    //if no coordinates found dont need to calculate distance, just throw error to let user know
+    if (!mainUser.address?.latitude || !mainUser.address?.longitude) {
+      throw ApiError.badRequest(
+        "User Coordinate not found. Please update your coordinate",
+      );
+    }
+
+    //if he have no followers just return empty array
+    if (!mainUser.followers?.length && dto.type === "followers") {
+      return [];
+    }
+
+    //if he have no followings just return empty array
+    if (!mainUser.following?.length && dto.type === "following") {
+      return [];
+    }
+
+    // Query users with coordinates
+    const query = {
+      "address.latitude": {
+        $exists: true,
+      },
+      "address.longitude": {
+        $exists: true,
+      },
+      _id: {
+        $in: dto.type === "followers" ? mainUser.followers : mainUser.following,
+      },
+    };
+
+    const users = await UserModel.find(query);
+
+    // Calculate distances and filter
+    return users
+      .map((user) => ({
+        ...user.toObject(),
+        //The distance should exist here as we are filtering users with coordinates and check to main user earlier
+        distance: getDistance(
+          {
+            lat: mainUser.address?.latitude ?? 0,
+            lng: mainUser.address?.longitude ?? 0,
+          },
+          {
+            lat: user.address?.latitude ?? 0,
+            lng: user.address?.longitude ?? 0,
+          },
+        ),
+      }))
+      .filter((user) => user.distance <= dto.maxDistance)
+      .sort((a, b) => a.distance - b.distance);
+  }
+
+  async updateLocation(userId: string, latitude: number, longitude: number) {
+    return UserModel.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          "address.latitude": latitude,
+          "address.longitude": longitude,
+        },
+      },
+      { new: true },
+    );
   }
 }
 

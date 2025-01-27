@@ -125,6 +125,21 @@ The following scripts are defined in `package.json`:
    npm start
    ```
 
+## Running the Code via Docker
+
+1. **Build the Imager**:
+
+   ```sh
+   docker build -t ryde-be-api .
+   ```
+
+2. **Start the Image**:
+
+   ```sh
+   docker run --env-file .env -p 3001:3001 ryde-be-api
+
+   ```
+
 ## Linting and Formatting
 
 - **ESLint**: Configured in `eslint.config.js` to lint TypeScript files.

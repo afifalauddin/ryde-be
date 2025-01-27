@@ -28,7 +28,7 @@ export const UserSchema = z
   })
   .openapi("User");
 
-export const zodUser = zodSchema(UserSchema, {
+export const zUserSchema = zodSchema(UserSchema, {
   timestamps: true,
   toJSON: {
     transform: (_, ret) => {
@@ -54,5 +54,9 @@ export const zodUser = zodSchema(UserSchema, {
   },
 });
 
-export const UserModel = model("User", zodUser); //convert zod schema to mongoose model
+zUserSchema.index({
+  location: "2dsphere",
+});
+
+export const UserModel = model("User", zUserSchema); //convert zod schema to mongoose model
 export type User = z.infer<typeof UserSchema>; //infer the type from zod schema

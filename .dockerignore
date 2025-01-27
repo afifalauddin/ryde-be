@@ -1,0 +1,25 @@
+# Common file
+.git
+.github
+.vscode
+coverage
+aws.yml
+*.md
+.prettierrc
+nodemon*.json
+
+# Node Files
+node_modules
+npm-debug.log
+npm-debug.log.*
+
+# Source files
+test
+
+# Other files
+.dockerignore
+Dockerfile
+.env
+.env.example
+
+docker-compose.yml

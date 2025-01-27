@@ -9,6 +9,8 @@ import { verifyToken } from "~/middleware/auth.middleware";
 import { UserCreateDto } from "./dto/create.dto";
 import { UserFollowDto } from "./dto/follow.dto";
 import { UserUpdateDto } from "./dto/update.dto";
+import { getNearbyUsersSchema, QueryNearbySchema } from "./dto/nearby.dto";
+import { locationSchema } from "./dto/location.dto";
 
 export const userRegistry = new OpenAPIRegistry();
 const userRouter: Router = express.Router();
@@ -105,13 +107,6 @@ userRegistry.registerPath({
     },
   },
 });
-
-userRouter.patch(
-  "/:id",
-  validate(userIdDto, "params"),
-  validate(UserUpdateDto, "body"),
-  userController.update,
-);
 
 userRegistry.registerPath({
   method: "get",
@@ -223,6 +218,61 @@ userRouter.get(
   verifyToken,
   validate(userIdDto, "params"),
   userController.getFollowStatus,
+);
+
+userRegistry.registerPath({
+  method: "get",
+  path: "/user/location/nearby",
+  tags: ["User"],
+  request: {
+    query: QueryNearbySchema.shape.query,
+  },
+  responses: {
+    200: {
+      description: "",
+    },
+  },
+});
+
+userRouter.get(
+  "/location/nearby",
+  verifyToken,
+  validate(getNearbyUsersSchema, "query"),
+  userController.getNearbyUsers,
+);
+
+userRegistry.registerPath({
+  method: "patch",
+  path: "/user/location",
+  tags: ["User"],
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: locationSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "",
+    },
+  },
+});
+
+userRouter.patch(
+  "/location",
+  verifyToken,
+  validate(locationSchema, "body"),
+  userController.updateLocation,
+);
+
+userRouter.patch(
+  "/:id",
+  validate(userIdDto, "params"),
+  validate(UserUpdateDto, "body"),
+  userController.update,
 );
 
 export default userRouter;
