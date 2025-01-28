@@ -10,7 +10,10 @@ export const validate = <T extends z.ZodType>(
 ) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      schema.safeParse(req[target]);
+      const validation = schema.safeParse(req[target]);
+      if (!validation.success) {
+        throw validation.error;
+      }
       next();
     } catch (error) {
       res.error(error);

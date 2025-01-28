@@ -16,5 +16,5 @@ healthRegistry.registerPath({
 });
 
 healthRouter.get("/", (_req: Request, res: Response) => {
-  res.send({ status: "OK" });
+  res.success({ status: "OK" });
 });

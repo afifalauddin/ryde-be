@@ -16,6 +16,10 @@ declare global {
         statusCode?: number,
       ): Response;
       error(error: unknown, statusCode?: number): Response;
+      messsage: string;
+      data: unknown;
+      timestamp: Date;
+      path: string;
     }
 
     interface Request {
